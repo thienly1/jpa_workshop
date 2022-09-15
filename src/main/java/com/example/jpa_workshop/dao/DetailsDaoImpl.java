@@ -45,6 +45,7 @@ public class DetailsDaoImpl implements DetailsDao{
         return details;
     }
 
+    @Transactional
     @Override
     public void delete(Integer id) {
         Details details= findById(id);

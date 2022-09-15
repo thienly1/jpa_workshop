@@ -4,6 +4,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,12 +24,35 @@ public class AppUser {
     @JoinColumn(name = "details_id", referencedColumnName = "detailsId")
     private Details userDetails;
 
+    @OneToMany(mappedBy = "borrower", cascade = CascadeType.PERSIST)
+    private List<BookLoan> loans;
+
     public AppUser() {
     }
 
     public AppUser(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public AppUser(String username, String password,Details userDetails) {
+        this.username = username;
+        this.password = password;
+        setRegDate(LocalDate.now());
+        this.userDetails = userDetails;
+    }
+    public void addBookLoan(BookLoan bookLoan){
+        if(loans==null) loans= new ArrayList<>();
+        loans.add(bookLoan);
+        bookLoan.setBorrower(this);
+    }
+    public void removeBookLoan(BookLoan bookLoan){
+        if(loans!= null){
+            if(loans.contains(bookLoan)){
+                bookLoan.setBorrower(null);
+                loans.remove(bookLoan);
+            }
+        }
     }
 
     public int getAppUserId() {

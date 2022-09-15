@@ -1,6 +1,7 @@
 package com.example.jpa_workshop.entity;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,16 +18,28 @@ public class Book {
     @Column(nullable = false)
     private int maxLoanDays;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Author> authors;
-
     public Book() {
     }
-
     public Book(String isbn, String title, int maxLoanDays) {
         this.isbn = isbn;
         this.title = title;
         this.maxLoanDays = maxLoanDays;
+    }
+    public void addAuthor(Author author){
+        if(authors==null) authors= new HashSet<>();
+        if(author.getWrittenBooks()==null) author.setWrittenBooks(new HashSet<>());
+        authors.add(author);
+        author.getWrittenBooks().add(this);
+    }
+    public void removeAuthor(Author author){
+        if(authors!=null){
+            if(authors.contains(author)){
+                author.getWrittenBooks().remove(this);
+                authors.remove(author);
+            }
+        }
     }
 
     public int getBookId() {
@@ -59,6 +72,14 @@ public class Book {
 
     public void setMaxLoanDays(int maxLoanDays) {
         this.maxLoanDays = maxLoanDays;
+    }
+
+    public Set<Author> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(Set<Author> authors) {
+        this.authors = authors;
     }
 
     @Override

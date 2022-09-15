@@ -1,6 +1,7 @@
 package com.example.jpa_workshop.entity;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,6 +31,20 @@ public class Author {
     public Author(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+    public void addBook(Book book){
+        if(writtenBooks==null) writtenBooks= new HashSet<>();
+        if(book.getAuthors()==null) book.setAuthors(new HashSet<>());
+        writtenBooks.add(book);
+        book.getAuthors().add(this);
+    }
+    public void removeBook(Book book){
+        if(writtenBooks!=null){
+            if(writtenBooks.contains(book)){
+                book.getAuthors().remove(this);
+                writtenBooks.remove(book);
+            }
+        }
     }
 
     public int getAuthorId() {

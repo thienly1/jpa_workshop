@@ -12,7 +12,7 @@ public class BookLoan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int loanId;
-    @CreationTimestamp
+
     private LocalDate loanDate;
     @Column(nullable = false)
     private LocalDate dueDate;
@@ -30,6 +30,14 @@ public class BookLoan {
         this.loanDate = loanDate;
         this.dueDate = dueDate;
         this.returned = returned;
+    }
+
+    public BookLoan(LocalDate loanDate, LocalDate dueDate, boolean returned, AppUser borrower, Book book) {
+        this.loanDate = loanDate;
+        this.dueDate = dueDate;
+        this.returned = returned;
+        this.borrower = borrower;
+        this.book = book;
     }
 
     public int getLoanId() {
