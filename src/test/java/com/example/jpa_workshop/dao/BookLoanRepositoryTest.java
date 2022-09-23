@@ -4,35 +4,28 @@ import com.example.jpa_workshop.entity.AppUser;
 import com.example.jpa_workshop.entity.Book;
 import com.example.jpa_workshop.entity.BookLoan;
 import com.example.jpa_workshop.entity.Details;
+import com.example.jpa_workshop.repository.BookLoanRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@AutoConfigureTestEntityManager
-@AutoConfigureTestDatabase
-@DirtiesContext
-@Transactional
-class BookLoanDaoImplTest {
+@DataJpaTest
+class BookLoanRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
     @Autowired
-    BookLoanDao bookLoanDao;
+    BookLoanRepository bookLoanRepository;
 
     BookLoan testObject;
 
@@ -69,33 +62,26 @@ class BookLoanDaoImplTest {
 
     @Test
     void findById() {
-        BookLoan found = bookLoanDao.findById(testObject.getLoanId());
+        Optional<BookLoan> found = bookLoanRepository.findById(testObject.getLoanId());
         assertNotNull(found);
-        assertEquals(1, found.getLoanId());
+        assertTrue(found.isPresent());
     }
 
     @Test
     void findAll() {
-        assertEquals(2, bookLoanDao.findAll().size());
+        assertEquals(2, bookLoanRepository.findAll().size());
     }
 
     @Test
     void create() {
         BookLoan bookLoan= new BookLoan(LocalDate.now(), LocalDate.now().plusDays(40), false, null, null);
-        bookLoanDao.create(bookLoan);
-        assertEquals(3, bookLoanDao.findAll().size());
-    }
-
-    @Test
-    void update() {
-        testObject.setReturned(true);
-        BookLoan updated = bookLoanDao.update(testObject);
-        assertTrue(updated.isReturned());
+        bookLoanRepository.save(bookLoan);
+        assertEquals(3, bookLoanRepository.findAll().size());
     }
 
     @Test
     void delete() {
-        bookLoanDao.delete(testObject.getLoanId());
-        assertEquals(1, bookLoanDao.findAll().size());
+        bookLoanRepository.deleteById(testObject.getLoanId());
+        assertEquals(1, bookLoanRepository.findAll().size());
     }
 }

@@ -1,33 +1,26 @@
 package com.example.jpa_workshop.dao;
 
 import com.example.jpa_workshop.entity.Book;
+import com.example.jpa_workshop.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-@SpringBootTest
-@AutoConfigureTestEntityManager
-@AutoConfigureTestDatabase
-@DirtiesContext
-@Transactional
-class BookDAOImplTest {
+@DataJpaTest
+class BookRepositoryTest {
     @Autowired
     TestEntityManager entityManager;
     @Autowired
-    BookDAO bookDAO;
+    BookRepository bookRepository;
     Book testObject;
 
     public List<Book> books(){
@@ -47,35 +40,28 @@ class BookDAOImplTest {
     @Test
     void findById() {
 
-        Book found = bookDAO.findById(testObject.getBookId());
+        Optional<Book> found = bookRepository.findById(testObject.getBookId());
         assertNotNull(found);
-        assertEquals(1, found.getBookId());
+        assertTrue(found.isPresent());
     }
 
     @Test
     void findAll() {
-        Collection<Book> books = bookDAO.findAll();
+        Collection<Book> books = bookRepository.findAll();
         assertNotNull(books);
         assertEquals(2, books.size());
     }
 
     @Test
     void create() {
-        Book newBook =  bookDAO.create(new Book("isbn4567", "Java Basic", 30));
+        Book newBook =  bookRepository.save(new Book("isbn4567", "Java Basic", 30));
         assertNotNull(newBook);
         assertEquals(3, newBook.getBookId());
     }
 
     @Test
-    void update() {
-        testObject.setIsbn("isbn000");
-        Book updated = bookDAO.update(testObject);
-        assertEquals("isbn000", updated.getIsbn());
-    }
-
-    @Test
     void delete() {
-        bookDAO.delete(testObject.getBookId());
-        assertEquals(1,bookDAO.findAll().size());
+        bookRepository.deleteById(testObject.getBookId());
+        assertEquals(1, bookRepository.findAll().size());
     }
 }

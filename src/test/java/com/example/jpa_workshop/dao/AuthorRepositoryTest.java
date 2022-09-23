@@ -2,34 +2,28 @@ package com.example.jpa_workshop.dao;
 
 import com.example.jpa_workshop.entity.Author;
 import com.example.jpa_workshop.entity.Book;
+import com.example.jpa_workshop.repository.AuthorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@AutoConfigureTestEntityManager
-@AutoConfigureTestDatabase
-@DirtiesContext
-@Transactional
-class AuthorDaoImplTest {
+@DataJpaTest
+class AuthorRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
     @Autowired
-    AuthorDao authorDao;
+    AuthorRepository authorRepository;
 
     Author testAuthor;
 
@@ -55,32 +49,25 @@ class AuthorDaoImplTest {
 
     @Test
     void findById() {
-        Author found = authorDao.findById(testAuthor.getAuthorId());
-        assertEquals(2,found.getAuthorId());
+       Optional<Author> found = authorRepository.findById(testAuthor.getAuthorId());
+        assertTrue(found.isPresent());
     }
 
     @Test
     void findAll() {
-        assertEquals(2, authorDao.findAll().size());
+        assertEquals(2, authorRepository.findAll().size());
     }
 
     @Test
     void create() {
         Author author3 = new Author("Loan", "Le", null);
-        authorDao.create(author3);
-        assertEquals(3, authorDao.findAll().size());
-    }
-
-    @Test
-    void update() {
-        testAuthor.setFirstName("Mai1");
-        Author updated = authorDao.update(testAuthor);
-        assertEquals("Mai1", updated.getFirstName());
+        authorRepository.save(author3);
+        assertEquals(3, authorRepository.findAll().size());
     }
 
     @Test
     void delete() {
-        authorDao.delete(testAuthor.getAuthorId());
-        assertEquals(1, authorDao.findAll().size());
+        authorRepository.deleteById(testAuthor.getAuthorId());
+        assertEquals(1, authorRepository.findAll().size());
     }
 }
