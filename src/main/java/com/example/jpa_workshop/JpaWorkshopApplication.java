@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootApplication
@@ -68,20 +69,34 @@ public class JpaWorkshopApplication {
             springB.addAuthor(Michael);
             springB.addAuthor(cay);
 
-            appUserRepository.findAll().forEach(System.out::println);
-            System.out.println( appUserRepository.findById(2));
-            bookRepository.findAll().forEach(System.out::println);
-            bookRepository.findById(1).orElseThrow(null);
+//            appUserRepository.findAll().forEach(System.out::println);
+//            System.out.println( appUserRepository.findById(2));
+//            bookRepository.findAll().forEach(System.out::println);
+//            bookRepository.findById(1).orElseThrow(null);
 
             seedingData();
 
+            //findByUserName
+            List<AppUser> namesWithMa = appUserRepository.findAppUsersByUsernameContaining("Ma");
+            namesWithMa.forEach(appUser -> System.out.println(appUser.getUserDetails().getName()));
+
+
+
+//            findByUsername();
+            List<AppUser> appUsersBorrowingJavaCoreFundamental = appUserRepository.findAppUsersByLoans_Book_Isbn("9780545139700");
+            appUsersBorrowingJavaCoreFundamental.forEach(appUser -> System.out.println(appUser.getUserDetails().getName()));
+
+            appUserRepository.updatePasswordByUserName("ly", "abc111");
+        }
+
+        private void findByUsername() {
             Optional<AppUser> lyTa= appUserRepository.findAppUserByUsername("ly");
             lyTa.ifPresent(System.out::println);
         }
 
         private void seedingData() throws InterruptedException {
 
-            AppUser martinChilling = appUserRepository.save(new AppUser("martinchilling", "ThisIsImportant",
+            AppUser martinChilling = appUserRepository.save(new AppUser("Martinchilling", "ThisIsImportant",
                     new Details("martin.chilling@mail.com", "Martin Chilling", LocalDate.parse("1960-04-05"))));
 
             Book harryPotterDH = bookRepository.save(new Book("9780545139700", "Harry Potter and the Deathly Hallows", 14));
@@ -101,9 +116,20 @@ public class JpaWorkshopApplication {
                         harryPotterDH));
                 martinChilling.addBookLoan(martinBorrowsHarryPotter);
                 Thread.sleep(1000);
-                martinChilling.getLoans().forEach(System.out::println);
+//                martinChilling.getLoans().forEach(System.out::println);
+
+            createAndDeleteAbook(j_k_Rowling);
 
         }
+        private void createAndDeleteAbook(Author j_k_rowling) {
+            Book harryPotterSS = bookRepository.save(new Book("9780590353403", "Harry Potter and the Sorcerer's Stone, Book 1", 14));
+            j_k_rowling.addBook(harryPotterSS); // book has no relationship it's okay to remove otherwise ConstraintViolationException will be thrown
+            j_k_rowling.removeBook(harryPotterSS); // book has relationship, we should delete the relationship before we delete book in the book's list
+            bookRepository.delete(harryPotterSS); // delete book in the book's list
+        }
+
     }
+
+
 
 }
