@@ -9,6 +9,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.Collection;
+import java.util.Optional;
 
 @Repository
 public class AppUserDAOImpl implements AppUserDao{
@@ -26,10 +27,17 @@ public class AppUserDAOImpl implements AppUserDao{
     @Transactional
     @Override
     public Collection<AppUser> findAll() {
-        TypedQuery query = entityManager.createQuery("SELECT a FROM AppUser a", AppUser.class);
+        TypedQuery<AppUser> query = entityManager.createQuery("SELECT a FROM AppUser a", AppUser.class);
         return query.getResultList();
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<AppUser> findAppUserByUsername(String username) {
+        TypedQuery<AppUser> query = entityManager.createQuery("select a from AppUser a where a.username= ?1", AppUser.class);
+        query.setParameter(1, username);
+        return Optional.ofNullable(query.getSingleResult());
+    }
 
     @Transactional
     @Override
@@ -52,4 +60,6 @@ public class AppUserDAOImpl implements AppUserDao{
             entityManager.remove(appUser);
         }
     }
+
+
 }

@@ -95,6 +95,14 @@ public class AppUser {
         this.userDetails = userDetails;
     }
 
+    public List<BookLoan> getLoans() {
+        return loans;
+    }
+
+    public void setLoans(List<BookLoan> loans) {
+        this.loans = loans;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
