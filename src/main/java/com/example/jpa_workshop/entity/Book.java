@@ -13,7 +13,7 @@ public class Book {
     private int bookId;
     @Column(length = 100, nullable = false)
     private String isbn;
-    @Column(length = 100, nullable = false)
+    @Column(length = 1000, nullable = false)
     private String title;
     @Column(nullable = false)
     private int maxLoanDays;

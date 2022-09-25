@@ -40,7 +40,7 @@ public class JpaWorkshopApplication {
 
         @Override
         public void run(String... args) throws Exception {
-            AppUser ly= new AppUser("ly", "123456", new Details("ly@mail.com", "Ly Ta",
+            AppUser ly= new AppUser("ly", "123456", new Details("lyTa@mail.com", "Ly Ta",
                     LocalDate.parse("1999-05-15")));
             AppUser mai = new AppUser("Mai", "135246", new Details("mai@mail.com", "Mai Ta",
                     LocalDate.parse("2005-09-23")));
